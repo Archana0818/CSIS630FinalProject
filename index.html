@@ -1,0 +1,134 @@
+<html>
+	<head>
+		<title>Final Project of CSIS630</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://sdk.amazonaws.com/js/aws-sdk-2.2.32.min.js"></script>
+		<script type="text/javascript">
+
+			//function to clear all the values entered by user 
+			function clear()
+			{
+				document.getElementById('feedRate').value = "";
+			    document.getElementById('runningRPM').value = "";
+				document.getElementById('runningTorque').value = "";
+				document.getElementById('form-response').innerHTML = "";    			     
+			}
+
+			//when user selectes the machine from dropdown
+			function machineSelected()
+			{
+				$('select[name=machine]').change(function () {
+					clear();
+				   
+				      if ($(this).val() == '27Micro') 
+				    {
+				        $(".form1").show();				       
+				        document.getElementById('maxRPM').value = 500;
+				        document.getElementById('ratedMotor').value = 12;	     	        
+				    } 
+
+				     else if ($(this).val() == '27Max') 
+				    {
+				        $(".form1").show();				      
+				        document.getElementById('maxRPM').value = 1200;
+				        document.getElementById('ratedMotor').value = 25;	     	        
+				    } 
+
+				     else if ($(this).val() == '40Max') 
+				    {
+				        $(".form1").show();				      
+				        document.getElementById('maxRPM').value = 1200;
+				        document.getElementById('ratedMotor').value = 104;	     	        
+				    } 
+
+					 else if ($(this).val() == '26LabTec') 
+				    {
+				        $(".form1").show();				      
+				        document.getElementById('maxRPM').value = 1200;
+				        document.getElementById('ratedMotor').value = 17;	     	        
+				    } 
+				    else
+				    {
+				        $(".form1").hide();				       
+				    }
+
+				});
+
+			}
+		
+			//this will run when user openes the web app
+			$(document).ready(function(){
+				$(".form1").hide();	
+				machineSelected();
+				//function when user clicks calculate button
+			$("#submit").click(function(e) {
+				e.preventDefault();
+				var feedRate = $("#feedRate").val();
+				var runningRPM = $("#runningRPM").val();
+				var maxRPM = $("#maxRPM").val();
+				var ratedMotor = $("#ratedMotor").val();
+				var runningTorque = $("#runningTorque").val();
+				var result =  0;
+				
+				
+				$.ajax({
+					type: "POST",
+					url: 'Enter your API URL Endpoint',
+					contentType: 'application/json',
+					data: JSON.stringify({
+					'feedRate': feedRate,
+					'runningRPM': runningRPM,
+					'maxRPM': maxRPM,
+					'ratedMotor': ratedMotor,
+					'runningTorque': runningTorque,
+					'result': result
+					}),				
+
+				success: function(result)
+				{
+					console.log(result)
+					
+					$('#form-response').html('Specific Energy in kW-Hr/Kg: ' + (result.body));
+				},
+
+				error: function()
+				{
+					$('#form-response').html('<div class="alert alert-info"					role="alert">Oops! Something went wrong ... </div>');
+				}
+
+				});
+			})
+		});
+
+		</script>
+	</head>
+	<body>
+		<h1 style ="text-align: center">Specific Energy Calculator</h1>
+		
+		<label for="machineNames" class="control-label">Choose Machine</label>
+		<select name="machine" id="machine">
+		  <option value="blank"></option>
+		  <option value="27Max">27 Max</option>
+		  <option value="27Micro">27 Micro</option>	
+		  <option value="40Max">40 Max</option>	
+		  <option value="26LabTec">LabTec 26mm</option>		 
+		</select><br><br>
+
+		<form class="form1">
+		  <label for="feedRate">Feed Rate lbs/hr:</label>
+		  <input type="text" id="feedRate" name="feedRate"><br><br>
+		  <label for="runningRPM">Running RPM:</label>
+		  <input  type="text" id="runningRPM" name="runningRPM"><br><br>
+		  <label for="maxRPM">Max. Screw RPM:</label>
+		  <input disabled type="text"  id="maxRPM" name="maxRPM"><br><br>
+		  <label for="ratedMotor">Rated Motor kW:</label>
+		  <input disabled type="text" id="ratedMotor" name="ratedMotor"><br><br>
+		  <label for="runningTorque">Running Torque %:</label>
+		  <input type="text"  id="runningTorque" name="runningTorque"><br>
+		  <button  id="submit" type="submit"style="background-color:red";>Calculate</button>
+		</form>		
+		
+		<span id="form-response"></span>
+	</body>
+</html>
+

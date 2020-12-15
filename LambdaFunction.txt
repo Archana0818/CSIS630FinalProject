@@ -1,0 +1,23 @@
+import json
+
+
+print('Loading function')
+def lambda_handler(event, context):
+    # TODO implement
+    feedRate = float(event['feedRate']) 
+    runningRPM = float(event['runningRPM'])
+    maxRPM = float(event['maxRPM'])
+    ratedMotor = float(event['ratedMotor'])
+    runningTorque = float(event['runningTorque'])
+    result =  float ((ratedMotor * (runningTorque/100) * (runningRPM/maxRPM) * 0.097)/ (feedRate/2.2) )
+    return {
+        'statusCode': 200,
+        'body': json.dumps( result),
+        'headers': {
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Origin" : "*",
+            "Allow" : "GET, OPTIONS, POST",
+            "Access-Control-Allow-Methods" : "GET, OPTIONS, POST",
+            "Access-Control-Allow-Headers" : "*"
+            }
+    }
